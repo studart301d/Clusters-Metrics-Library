@@ -9,6 +9,16 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from pathlib import Path
+import os
+import sys
+
+#working with relative path's
+#get the currently worked direcotry
+directory=Path(os.getcwd()).parents[0]
+sys.path.insert(0,str(directory))
+
+import dunn_sklearn
 
 from sklearn.metrics.cluster import unsupervised
 
@@ -33,7 +43,7 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 	    df2.columns = ['Cluster','silhouette_mean']
 	    df2 = df2.sort_values(['silhouette_mean'],ascending=False).reset_index(drop=True)
 	    
-	    if(fig_size == None):
+	    if fig_size == None:
 	        if len(df2) > 64:
 	            fig = plt.figure(figsize=(len(df2)/8,len(df2)/4))
 	        else:
@@ -52,7 +62,7 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 		cluster.columns = ['silhouette','Cluster','id_cliente']
 		cluster = cluster.sort_values(['silhouette'],ascending=False).reset_index(drop=True)
 
-		if(fig_size == None):
+		if fig_size == None:
 	        if len(cluster) > 64:
 	            fig = plt.figure(figsize=(len(cluster)/8,len(cluster)/4))
 	        else:
@@ -65,4 +75,19 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 	    plt.show()
 
 
+#Implementation of Dunn index
 
+from sklearn.metrics.pairwise import euclidean_distances
+
+def normalize(X):
+	return dunn_sklearn.normalize_to_smallest_integers(X)
+
+def cluster_diameter(X, distances):
+	return dunn_sklearn.diameter(X, euclidean_distances(X.drop('labels')))
+
+def min_cluster_distances(X, distances):
+	return dunn_sklearn.min_cluster_distances(X, euclidean_distances(X.drop('labels')))
+
+def dunn_index(X, distances):
+	return dunn_sklearn.dunn(labels, euclidean_distances(X.drop('labels')))
+>>>>>>> 1141e0b41e2fc263a13902ad207eeb4ed8a7adc6
