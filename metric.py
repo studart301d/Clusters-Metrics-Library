@@ -90,4 +90,5 @@ def min_cluster_distances(X, distances):
 
 def dunn_index(X, distances):
 	return dunn_sklearn.dunn(labels, euclidean_distances(X.drop('labels')))
->>>>>>> 1141e0b41e2fc263a13902ad207eeb4ed8a7adc6
+
+
