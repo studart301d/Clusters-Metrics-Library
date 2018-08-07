@@ -20,6 +20,11 @@ sys.path.insert(0,str(directory))
 
 import dunn_sklearn
 
+
+
+#Implementation of silhouette
+
+
 from sklearn.metrics.cluster import unsupervised
 
 def silhouette_samples(X,labels,metric='euclidean',**kwds):
@@ -57,9 +62,8 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 
 	elif type == 'cluster':
 
-		df['id_cliente'] = labels['id_cliente']
 		cluster = df[df['cluster'] == cluster]
-		cluster.columns = ['silhouette','Cluster','id_cliente']
+		cluster.columns = ['silhouette','Cluster']
 		cluster = cluster.sort_values(['silhouette'],ascending=False).reset_index(drop=True)
 
 		if fig_size == None:
@@ -71,7 +75,7 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 	        fig = plt.figure(figsize = fig_size)
 	        
 	    ax = sns.barplot(cluster['silhouette'],y = cluster.index.values,orient='h',)
-	    ax.set_yticklabels(cluster['Clientes'])
+	    ax.set_yticklabels(cluster['Dados'])
 	    plt.show()
 
 
