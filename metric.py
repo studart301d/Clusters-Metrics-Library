@@ -33,14 +33,14 @@ def silhouette_samples(X,labels,metric='euclidean',**kwds):
 def silhouette_score(X,labels,metric='euclidean',sample_size=None,random_state=None,**kwds):
     return unsupervised.silhouette_score(X,labels,metric,sample_size,random_state,**kwds)
 
-def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,cluster = None,**kwds):
+def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,cluster = None,y=None,**kwds):
     
     silhouette_samples = unsupervised.silhouette_samples(X,labels,metric,**kwds)
     
     df = pd.DataFrame(silhouette_samples)
     df['cluster'] = labels
 
-    if type == 'None':
+    if type == None:
 
 	    cluster_means = df.groupby('cluster').mean()
 	    dit = dict(zip(cluster_means.index,cluster_means[0]))
@@ -56,7 +56,11 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 	    else:
 	        fig = plt.figure(figsize = fig_size)
 	        
-	    ax = sns.barplot(df2['silhouette_mean'],y = cluster_means.index,orient='h',)
+	    if y == None:
+	    	ax = sns.barplot(df2['silhouette_mean'],y = cluster_means.index,orient='h')
+	    else:
+	    	ax = sns.barplot(df2['silhouette_mean'],y = y,orient='h')
+
 	    ax.set_yticklabels(df2['Cluster'])
 	    plt.show()
 
@@ -74,7 +78,11 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 	    else:
 	        fig = plt.figure(figsize = fig_size)
 	        
-	    ax = sns.barplot(cluster['silhouette'],y = cluster.index.values,orient='h',)
+	    if y == None:
+	    	ax = sns.barplot(cluster['silhouette'],y = cluster.index.values,orient='h')
+	    else:
+	    	ax = sns.barplot(cluster['silhouette'],y = y,orient='h')
+
 	    ax.set_yticklabels(cluster['Dados'])
 	    plt.show()
 
