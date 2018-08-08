@@ -74,7 +74,7 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 			else:
 				fig = plt.figure(figsize=(8,6))
 		else:
-		fig = plt.figure(figsize = fig_size)
+			fig = plt.figure(figsize = fig_size)
 
 		if y == None:
 			ax = sns.barplot(cluster['silhouette'],y = cluster.index.values,orient='h')
