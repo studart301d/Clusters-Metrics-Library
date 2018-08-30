@@ -85,7 +85,21 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 
 		plt.ylabel('Index')
 		plt.show()
-        
+
+def elbow(data, max_number_of_clusters):
+    distortions = []
+    K = range(1, max_number_of_clusters+1)
+    for k in K:
+        kmeans = KMeans(n_clusters=k).fit(data)
+        kmeans.fit(data)
+        distortions.append(sum(np.min(cdist(data, kmeans.cluster_centers_, 'euclidean'), axis=1)) / len(data))
+
+    # Plot the elbow
+    plt.plot(K, distortions, 'x-')
+    plt.xlabel('k')
+    plt.ylabel('Distortion')
+    plt.title('The Elbow Method showing the optimal k')
+    plt.show()  
         
 
 
