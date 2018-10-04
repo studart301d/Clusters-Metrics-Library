@@ -10,8 +10,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import math
 
-get_ipython().magic('matplotlib inline')
-
 
 # In[13]:
 
