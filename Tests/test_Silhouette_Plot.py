@@ -16,9 +16,10 @@ sys.path.insert(0,str(directory))
 
 
 import metric
+from sklearn.metrics.pairwise import euclidean_distances
 
 
-data = make_blobs(n_samples=200, n_features=2, 
+data = make_blobs(n_samples=500, n_features=2, 
                            centers=4, cluster_std=1.8,random_state=101)
 
 plt.scatter(data[0][:,0],data[0][:,1],c=data[1],cmap='rainbow')
@@ -28,7 +29,7 @@ plt.show()
 
 from sklearn.cluster import KMeans
 
-kmeans = KMeans(n_clusters=3)
+kmeans = KMeans(n_clusters=2)
 
 kmeans.fit(data[0])
 
@@ -45,4 +46,5 @@ ax2.scatter(data[0][:,0],data[0][:,1],c=data[1],cmap='rainbow')
 
 plt.show()
 
-metric.silhouette_plot(data[0], kmeans.labels_)
+metric.cluster_avaliation(data[0], kmeans.labels_,euclidean_distances(data[0]),20,4)
+#metric.silhouette_plot(data[0], kmeans.labels)
