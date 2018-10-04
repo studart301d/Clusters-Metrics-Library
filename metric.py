@@ -87,6 +87,9 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 		plt.show()
 
 def elbow(data, max_number_of_clusters):
+
+	from sklearn.metric.cluster import KMeans
+
     distortions = []
     K = range(1, max_number_of_clusters+1)
     for k in K:
@@ -103,22 +106,6 @@ def elbow(data, max_number_of_clusters):
 
 #Dunn Index:
 
-def normalize_to_smallest_integers(labels):
-    """Normalizes a list of integers so that each number is reduced to the minimum possible integer, maintaining the order of elements.
-
-    :param labels: the list to be normalized
-    :returns: a numpy.array with the values normalized as the minimum integers between 0 and the maximum possible value.
-    """
-
-    max_v = len(set(labels)) if -1 not in labels else len(set(labels)) - 1
-    sorted_labels = np.sort(np.unique(labels))
-    unique_labels = range(max_v)
-    new_c = np.zeros(len(labels), dtype=np.int32)
-
-    for i, clust in enumerate(sorted_labels):
-        new_c[labels == clust] = unique_labels[i]
-
-    return new_c
 
 
 def dunn(labels, distances):
@@ -140,7 +127,11 @@ def dunn(labels, distances):
     :param distances: an n x n numpy.array containing the pairwise distances between elements
     
     .. [Kovacs2005] Kovács, F., Legány, C., & Babos, A. (2005). Cluster validity measurement techniques. 6th International Symposium of Hungarian Researchers on Computational Intelligence.
+    
+	O Parametro distances pode ser utiliado sklearn.metrics.pairwise
+		por exemplo from sklearn.metrics.pairwise import euclidean_distances
     """
+
 
     labels = normalize_to_smallest_integers(labels)
 
@@ -151,6 +142,24 @@ def dunn(labels, distances):
         return unique_cluster_distances[1] / max_diameter
     else:
         return unique_cluster_distances[0] / max_diameter
+
+
+def normalize_to_smallest_integers(labels):
+    """Normalizes a list of integers so that each number is reduced to the minimum possible integer, maintaining the order of elements.
+
+    :param labels: the list to be normalized
+    :returns: a numpy.array with the values normalized as the minimum integers between 0 and the maximum possible value.
+    """
+
+    max_v = len(set(labels)) if -1 not in labels else len(set(labels)) - 1
+    sorted_labels = np.sort(np.unique(labels))
+    unique_labels = range(max_v)
+    new_c = np.zeros(len(labels), dtype=np.int32)
+
+    for i, clust in enumerate(sorted_labels):
+        new_c[labels == clust] = unique_labels[i]
+
+    return new_c
 
 
 def min_cluster_distances(labels, distances):
@@ -188,20 +197,9 @@ def diameter(labels, distances):
     return diameters
         
 
-
-
-#Implementation of Dunn index
-
-# from sklearn.metrics.pairwise import euclidean_distances
-
-# def normalize(X):
-# 	return dunn_sklearn.normalize_to_smallest_integers(X)
-
-# def cluster_diameter(X, distances):
-# 	return dunn_sklearn.diameter(X, euclidean_distances(X.drop('labels')))
-
-# def min_cluster_distances(X, distances):
-# 	return dunn_sklearn.min_cluster_distances(X, euclidean_distances(X.drop('labels')))
-
-# def dunn_index(X, distances):
-# 	return dunn_sklearn.dunn(labels, euclidean_distances(X.drop('labels')))
+def cluster_avaliation(X,labels,distances,max_number_of_clusters = None,fig_size = None,type = None,cluster = None,y=None,index = False):
+	print("Result of silhouette: "+ str(silhouette_score(distances,labels, metric= 'precomputed')))
+	print("Result of index dunn: "+ str(dunn(labels,distances) + "\n"))
+	if max_number_of_clusters == None:
+		elbow(X,max_number_of_clusters)
+	silhouette_plot(distances,labels,metric= 'precomputed',fig_size = None,type = None,cluster = None,y=None,index = False)
