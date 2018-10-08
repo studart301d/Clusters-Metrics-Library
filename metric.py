@@ -86,7 +86,7 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 		plt.ylabel('Index')
 		plt.show()
 
-def elbow(data, max_number_of_clusters,step = 1):
+def elbow(data, max_number_of_clusters,size,step = 1):
 
     from sklearn.cluster import KMeans
     from scipy.spatial.distance import cdist
@@ -99,6 +99,7 @@ def elbow(data, max_number_of_clusters,step = 1):
         distortions.append(sum(np.min(cdist(data, kmeans.cluster_centers_, 'euclidean'), axis=1)) / len(data))
 
     # Plot the elbow
+    plt.figure(figsize = (size/8,size/8))
     plt.plot(K, distortions, 'x-')
     plt.xlabel('k')
     plt.ylabel('Distortion')
@@ -200,7 +201,7 @@ def diameter(labels, distances):
 
 def cluster_avaliation(X,labels,distances,max_number_of_clusters = None,step = 1,fig_size = None,type = None,cluster = None,y=None,index = False):
 	print("Result of silhouette: "+ str(silhouette_score(distances,labels, metric= 'precomputed')))
-	print("Result of dunn index: ",str(dunn(labels,distances)),"\n")
+	print("Result of dunn index: " + str(dunn(labels,distances)),"\n")
 	if max_number_of_clusters != None:
-		elbow(X,max_number_of_clusters,step)
+		elbow(X,max_number_of_clusters,len(labels.unique()),step)
 	silhouette_plot(distances,labels,metric= 'precomputed',fig_size = None,type = None,cluster = None,y=None,index = False)
