@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Jul 29 19:19:57 2018
-@author: gabri
-"""
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,6 +5,8 @@ import seaborn as sns
 from pathlib import Path
 import os
 import sys
+from sklearn.cluster import KMeans
+from scipy.spatial.distance import cdist
 
 #working with relative path's
 #get the currently worked direcotry
@@ -86,10 +82,18 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,type = None,clus
 		plt.ylabel('Index')
 		plt.show()
 
-def elbow(data, max_number_of_clusters,step = 1):
+def elbow(data, max_number_of_clusters, step = 1):
+    """Plots the elbow containing the variance of each cluster
 
-    from sklearn.cluster import KMeans
-    from scipy.spatial.distance import cdist
+    Args:
+        data: data to be clustered
+        max_number_of_clusters: maximum number of clusters
+        step: determines how much the iteraction will increase (1 by default)
+            For example, if step = 10, the function will plot the elbow for every 10 clusters
+
+    Returns:
+        void
+    """
 
     distortions = []
     K = np.arange(1, max_number_of_clusters+1,step)
@@ -107,49 +111,14 @@ def elbow(data, max_number_of_clusters,step = 1):
 
 #Dunn Index:
 
-
-
-def dunn(labels, distances):
-    """
-    Dunn index for cluster validation (the bigger, the better)
-    
-    .. math:: D = \\min_{i = 1 \\ldots n_c; j = i + 1\ldots n_c} \\left\\lbrace \\frac{d \\left( c_i,c_j \\right)}{\\max_{k = 1 \\ldots n_c} \\left(diam \\left(c_k \\right) \\right)} \\right\\rbrace
-    
-    where :math:`d(c_i,c_j)` represents the distance between
-    clusters :math:`c_i` and :math:`c_j`, given by the distances between its
-    two closest data points, and :math:`diam(c_k)` is the diameter of cluster
-    :math:`c_k`, given by the distance between its two farthest data points.
-    
-    The bigger the value of the resulting Dunn index, the better the clustering
-    result is considered, since higher values indicate that clusters are
-    compact (small :math:`diam(c_k)`) and far apart.
-
-    :param labels: a list containing cluster labels for each of the n elements
-    :param distances: an n x n numpy.array containing the pairwise distances between elements
-    
-    .. [Kovacs2005] Kovács, F., Legány, C., & Babos, A. (2005). Cluster validity measurement techniques. 6th International Symposium of Hungarian Researchers on Computational Intelligence.
-    
-	O Parametro distances pode ser utiliado sklearn.metrics.pairwise
-		por exemplo from sklearn.metrics.pairwise import euclidean_distances
-    """
-
-
-    labels = normalize_to_smallest_integers(labels)
-
-    unique_cluster_distances = np.unique(min_cluster_distances(labels, distances))
-    max_diameter = max(diameter(labels, distances))
-
-    if np.size(unique_cluster_distances) > 1:
-        return unique_cluster_distances[1] / max_diameter
-    else:
-        return unique_cluster_distances[0] / max_diameter
-
-
 def normalize_to_smallest_integers(labels):
     """Normalizes a list of integers so that each number is reduced to the minimum possible integer, maintaining the order of elements.
-
-    :param labels: the list to be normalized
-    :returns: a numpy.array with the values normalized as the minimum integers between 0 and the maximum possible value.
+    
+    Args:
+        labels: the list to be normalized
+    
+    Returns:
+        numpy.array with the values normalized as the minimum integers between 0 and the maximum possible value.
     """
 
     max_v = len(set(labels)) if -1 not in labels else len(set(labels)) - 1
@@ -163,11 +132,40 @@ def normalize_to_smallest_integers(labels):
     return new_c
 
 
+def dunn(labels, distances):
+    """
+    Dunn index for cluster validation (the bigger, the better)
+    
+    .. math:: D = \\min_{i = 1 \\ldots n_c; j = i + 1\ldots n_c} \\left\\lbrace \\frac{d \\left( c_i,c_j \\right)}{\\max_{k = 1 \\ldots n_c} \\left(diam \\left(c_k \\right) \\right)} \\right\\rbrace
+    
+    Args:
+        labels: a list containing cluster labels for each of the n elements
+        distances: an n x n numpy.array containing the pairwise distances between elements
+    
+    Returns:
+        The computed Dunn Index for the given data
+    """
+
+    labels = normalize_to_smallest_integers(labels)
+
+    unique_cluster_distances = np.unique(min_cluster_distances(labels, distances))
+    max_diameter = max(diameter(labels, distances))
+
+    if np.size(unique_cluster_distances) > 1:
+        return unique_cluster_distances[1] / max_diameter
+    else:
+        return unique_cluster_distances[0] / max_diameter
+
+
 def min_cluster_distances(labels, distances):
     """Calculates the distances between the two nearest points of each cluster.
 
-    :param labels: a list containing cluster labels for each of the n elements
-    :param distances: an n x n numpy.array containing the pairwise distances between elements
+    Args:
+        labels: a list containing cluster labels for each of the n elements
+        distances: an n x n numpy.array containing the pairwise distances between elements
+
+    Returns:
+        List containing distances between the two nearest points of each cluster
     """
     labels = normalize_to_smallest_integers(labels)
     n_unique_labels = len(np.unique(labels))
@@ -182,10 +180,13 @@ def min_cluster_distances(labels, distances):
     
 def diameter(labels, distances):
     """Calculates cluster diameters (the distance between the two farthest data points in a cluster)
-
-    :param labels: a list containing cluster labels for each of the n elements
-    :param distances: an n x n numpy.array containing the pairwise distances between elements
-    :returns:
+    
+    Args:
+        labels: a list containing cluster labels for each of the n elements
+        distances: an n x n numpy.array containing the pairwise distances between elements
+    
+    Returns:
+        List containing diameters of each cluster
     """
     labels = normalize_to_smallest_integers(labels)
     n_clusters = len(np.unique(labels))
@@ -198,7 +199,7 @@ def diameter(labels, distances):
     return diameters
         
 
-def cluster_avaliation(X,labels,distances,max_number_of_clusters = None,step = 1,fig_size = None,type = None,cluster = None,y=None,index = False):
+def cluster_evaluation(X,labels,distances,max_number_of_clusters = None,step = 1,fig_size = None,type = None,cluster = None,y=None,index = False):
 	print("Result of silhouette: "+ str(silhouette_score(distances,labels, metric= 'precomputed')))
 	print("Result of dunn index: ",str(dunn(labels,distances)),"\n")
 	if max_number_of_clusters != None:
