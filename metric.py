@@ -165,9 +165,9 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,cluster = None,y
         
         if fig_size == None:
             if len(df2) > 64:
-                fig = plt.figure(figsize=(len(df2)/8,len(df2)/4))
+                fig = plt.figure(figsize=(len(df2)/7,len(df2)/3))
             else:
-                fig = plt.figure(figsize=(8,6))
+                fig = plt.figure(figsize=(10,8))
         else:
             fig = plt.figure(figsize = fig_size)
 
@@ -189,9 +189,9 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,cluster = None,y
         
         if fig_size == None:
             if len(cluster) > 64:
-                fig = plt.figure(figsize=(len(cluster)/8,len(cluster)/4))
+                fig = plt.figure(figsize=(len(cluster)/7,len(cluster)/3))
             else:
-                fig = plt.figure(figsize=(8,6))
+                fig = plt.figure(figsize=(12,10))
         else:
             fig = plt.figure(figsize = fig_size)
 
