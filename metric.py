@@ -109,7 +109,7 @@ def silhouette_score(X,labels,metric='euclidean',sample_size=None,random_state=N
 
     return unsupervised.silhouette_score(X,labels,metric,sample_size,random_state,**kwds)
 
-def silhouette_plot(X,labels,metric='euclidean',fig_size = None,cluster = None,y=None,index = False,**kwds):
+def silhouette_plot(X,labels,metric='euclidean',fig_size = None,cluster = None,ID=None,index = False,**kwds):
 
     """Makes a silhouette bar graph.
 
@@ -180,11 +180,10 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,cluster = None,y
 
     elif cluster != None:
 
-        if y.all() != None:
-            df['y'] = y
+        df['ID'] = ID
 
         cluster = df[df['cluster'] == cluster]
-        cluster.columns = ['silhouette','Cluster','y']
+        cluster.columns = ['silhouette','Cluster','ID']
         cluster = cluster.sort_values(['silhouette'],ascending=False).reset_index(drop=True)
         
         if fig_size == None:
@@ -198,7 +197,7 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,cluster = None,y
         ax = sns.barplot(cluster['silhouette'],y = cluster.index,orient='h')
 
         if index != None:
-            ax.set_yticklabels(cluster['y'])
+            ax.set_yticklabels(cluster['ID'])
 
         plt.ylabel('ID samples')
         plt.show()
@@ -213,7 +212,7 @@ def elbow(data, max_number_of_clusters, step = 1):
     Returns:
         void
     """
-    data = data[0]
+    #data = data[0]
     distortions = []
     K = np.arange(1, max_number_of_clusters+1,step)
     for k in K:
@@ -227,6 +226,51 @@ def elbow(data, max_number_of_clusters, step = 1):
     plt.ylabel('Distortion')
     plt.title('The Elbow Method showing the optimal k')
     plt.show()
+
+
+def CalinskiHarabasz_score(data,labels):
+    
+    """Compute the Calinski and Harabasz score.
+    It is also known as the Variance Ratio Criterion.
+    The score is defined as ratio between the within-cluster dispersion and
+    the between-cluster dispersion.
+    
+    Parameters
+    ----------
+    X : array-like, shape (``n_samples``, ``n_features``)
+        List of ``n_features``-dimensional data points. Each row corresponds
+        to a single data point.
+    labels : array-like, shape (``n_samples``,)
+        Predicted labels for each sample.
+    Returns
+    -------
+    score : float
+        The resulting Calinski-Harabasz score.
+    """
+    
+    n_labels = len(np.unique(labels))
+    if n_labels == 1:
+        return 1
+    
+    n_samples = len(data)
+    
+    B,W = 0.,0. #extra_disp, intra_disp
+    
+    for i in range(n_labels):
+        
+        cluster_i = data[labels == i]
+        
+        mean_i = np.mean(cluster_i,axis=0) #centroid of cluster i
+        mean = np.mean(data,axis=0) #centroid of data
+        
+        B+= len(cluster_i)*np.sum((mean - mean_i)**2)
+        W+= np.sum((cluster_i - mean_i)**2)
+        
+    B = B/(n_labels - 1.)
+    W = W/(n_samples - n_labels)
+    
+    return np.mean(B/W)
+
 
 #Dunn Index:
 
