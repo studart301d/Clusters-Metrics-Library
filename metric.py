@@ -9,18 +9,17 @@ from sklearn.cluster import KMeans
 from scipy.spatial.distance import cdist, pdist
 
 #working with relative path's
-#get the currently worked direcotry
-directory=Path(os.getcwd()).parents[0]
-sys.path.insert(0,str(directory))
+#get the currently worked directory
+directory = Path(os.getcwd()).parents[0]
+sys.path.insert(0, str(directory))
 
 #Implementation of silhouette
 
 
 from sklearn.metrics.cluster import unsupervised
 
-def silhouette_samples(X,labels,metric='euclidean',**kwds):
+def silhouette_samples(X, labels, metric='euclidean', **kwds):
     """Compute the Silhouette Coefficient for each sample.
-
         The Silhouette Coefficient is a measure of how well samples are clustered
         with samples that are similar to themselves. Clustering models with a high
         Silhouette Coefficient are said to be dense, where samples in the same
@@ -36,30 +35,27 @@ def silhouette_samples(X,labels,metric='euclidean',**kwds):
         The best value is 1 and the worst value is -1. Values near 0 indicate
         overlapping clusters.
         Read more in the :ref:`User Guide <silhouette_coefficient>`.
-
-    Args:   
-        X : array [n_samples_a, n_samples_a] if metric == “precomputed”, or, [n_samples_a, n_features] otherwise
+    Args:
+        X : array [n_samples_a, n_samples_a] if metric == “precomputed”,
+          or, [n_samples_a, n_features] otherwise
         Array of pairwise distances between samples, or a feature array.
-
         labels : array, shape = [n_samples]
         label values for each sample
-
-        metric : string, or callable
-        The metric to use when calculating distance between instances in a feature array. If metric is a string, it must be one of the options allowed by sklearn.metrics.pairwise.pairwise_distances. If X is the distance array itself, use “precomputed” as the metric.
-
+        metric: string, or callable
+        The metric to use when calculating distance between instances in a feature array. 
+            If metric is a string, it must be one of the options allowed by sklearn.metrics.pairwise.pairwise_distances. If X is the distance array itself, use “precomputed” as the metric.
         `**kwds` : optional keyword parameters
-        Any further parameters are passed directly to the distance function. If using a scipy.spatial.distance metric, the parameters are still metric dependent. See the scipy docs for usage examples.
-
-    Returns:    
+        Any further parameters are passed directly to the distance function.
+        If using a scipy.spatial.distance metric, the parameters are still metric dependent. See the scipy docs for usage examples.
+    Returns:
         silhouette : array, shape = [n_samples]
             Silhouette Coefficient for each samples.
     """
 
-    return unsupervised.silhouette_samples(X,labels,metric,**kwds)
+    return unsupervised.silhouette_samples(X, labels, metric, **kwds)
 
-def silhouette_score(X,labels,metric='euclidean',sample_size=None,random_state=None,**kwds):
+def silhouette_score(X, labels, metric='euclidean', sample_size=None, random_state=None, **kwds):
     """Compute the mean Silhouette Coefficient of all samples.
-
         The Silhouette Coefficient is calculated using the mean intra-cluster
         distance (``a``) and the mean nearest-cluster distance (``b``) for each
         sample.  The Silhouette Coefficient for a sample is ``(b - a) / max(a,
@@ -74,7 +70,6 @@ def silhouette_score(X,labels,metric='euclidean',sample_size=None,random_state=N
         been assigned to the wrong cluster, as a different cluster is more similar.
         Read more in the :ref:`User Guide <silhouette_coefficient>`.
         Parameters
-
     Args:
         X : array [n_samples_a, n_samples_a] if metric == "precomputed", or, \
                  [n_samples_a, n_features] otherwise
@@ -101,22 +96,18 @@ def silhouette_score(X,labels,metric='euclidean',sample_size=None,random_state=N
             Any further parameters are passed directly to the distance function.
             If using a scipy.spatial.distance metric, the parameters are still
             metric dependent. See the scipy docs for usage examples.
-
     Returns:
-        silhouette : float
+        silhouette: float
             Mean Silhouette Coefficient for all samples.
     """
 
-    return unsupervised.silhouette_score(X,labels,metric,sample_size,random_state,**kwds)
+    return unsupervised.silhouette_score(X, labels, metric, sample_size, random_state, **kwds)
 
-def silhouette_plot(X,labels,metric='euclidean',fig_size = None,cluster = None,ID=None,index = False,**kwds):
-
+def silhouette_plot(X, labels, metric='euclidean', fig_size = None, cluster = None, ID=None, index = False, **kwds):
     """Makes a silhouette bar graph.
-
-        Calculate the silhouette of the samples and then plot a graph of the chosen cluster 
-        and the silhouettes of the samples or plot a graph with all the means of the 
+        Calculate the silhouette of the samples and then plot a graph of the chosen cluster
+        and the silhouettes of the samples or plot a graph with all the means of the
         silhouettes of the clusters
-
     Args:
         X : array [n_samples_a, n_samples_a] if metric == "precomputed", or, \
                  [n_samples_a, n_features] otherwise
@@ -129,51 +120,43 @@ def silhouette_plot(X,labels,metric='euclidean',fig_size = None,cluster = None,I
             allowed by :func:`metrics.pairwise.pairwise_distances
             <sklearn.metrics.pairwise.pairwise_distances>`. If X is the distance
             array itself, use ``metric="precomputed"``.
-        fig_size : number, type int
+        fig_size: number, type int
             Number for the figsize of the plot if fig_size == None then a 
             calculation is made to leave a suitable size for the quantity of samples.
-        cluster : number do cluster,type int
+        cluster: number do cluster,type int
             Cluster number to generate the silhouettes graph of its samples 
             if cluster == None will then generate a plot of the mean silhouettes of all clusters.
         y : Smple ID
             ID of the samples, used to label the bars on the y-axis
-
         **kwds : optional keyword parameters
             Any further parameters are passed directly to the distance function.
             If using a scipy.spatial.distance metric, the parameters are still
             metric dependent. See the scipy docs for usage examples.
-
-
-
-
     Returns:
         Void
-
     """
     
-    silhouette_samples = unsupervised.silhouette_samples(X,labels,metric,**kwds)
+    silhouette_samples = unsupervised.silhouette_samples(X, labels,metric, **kwds)
 
     df = pd.DataFrame(silhouette_samples)
     df['cluster'] = labels
 
     if cluster == None:
         cluster_means = df.groupby('cluster').mean()
-        dit = dict(zip(cluster_means.index,cluster_means[0]))
+        dit = dict(zip(cluster_means.index, cluster_means[0]))
         df2 = pd.DataFrame(list(dit.items()))
-        df2.columns = ['Cluster','silhouette_mean']
-        
+        df2.columns = ['Cluster', 'silhouette_mean']
         
         if fig_size == None:
             if len(df2) > 64:
-                fig = plt.figure(figsize=(len(df2)/7,len(df2)/3))
+                fig = plt.figure(figsize=(len(df2)/7, len(df2)/3))
             else:
-                fig = plt.figure(figsize=(10,8))
+                fig = plt.figure(figsize=(10, 8))
         else:
             fig = plt.figure(figsize = fig_size)
 
-
-        df2 = df2.sort_values(['silhouette_mean'],ascending=False).reset_index(drop=True)
-        ax = sns.barplot(df2['silhouette_mean'],y = df2.index,orient='h')
+        df2 = df2.sort_values(['silhouette_mean'], ascending=False).reset_index(drop=True)
+        ax = sns.barplot(df2['silhouette_mean'],y = df2.index, orient='h')
         ax.set_yticklabels(df2['Cluster'])
         plt.ylabel('Cluster')
         plt.show()  
@@ -229,22 +212,18 @@ def elbow(data, max_number_of_clusters, step = 1):
 
 
 def CalinskiHarabasz_score(data,labels):
-    
     """Compute the Calinski and Harabasz score.
-    It is also known as the Variance Ratio Criterion.
-    The score is defined as ratio between the within-cluster dispersion and
-    the between-cluster dispersion.
-    
-    Parameters
-    ----------
-    X : array-like, shape (``n_samples``, ``n_features``)
-        List of ``n_features``-dimensional data points. Each row corresponds
-        to a single data point.
-    labels : array-like, shape (``n_samples``,)
-        Predicted labels for each sample.
-    Returns
-    -------
-    score : float
+        It is also known as the Variance Ratio Criterion.
+        The score is defined as ratio between the within-cluster dispersion and
+        the between-cluster dispersion.
+    Parameters:
+        X : array-like, shape (``n_samples``, ``n_features``)
+            List of ``n_features``-dimensional data points. Each row corresponds
+            to a single data point.
+        labels : array-like, shape (``n_samples``,)
+            Predicted labels for each sample.
+    Returns:
+        score : float
         The resulting Calinski-Harabasz score.
     """
     
@@ -275,11 +254,10 @@ def CalinskiHarabasz_score(data,labels):
 #Dunn Index:
 
 def normalize_to_smallest_integers(labels):
-    """Normalizes a list of integers so that each number is reduced to the minimum possible integer, maintaining the order of elements.
-    
+    """Normalizes a list of integers so that each number is reduced to the minimum possible integer,
+    maintaining the order of elements.
     Args:
         labels: the list to be normalized
-    
     Returns:
         numpy.array with the values normalized as the minimum integers between 0 and the maximum possible value.
     """
@@ -298,13 +276,10 @@ def normalize_to_smallest_integers(labels):
 def dunn(labels, distances):
     """
     Dunn index for cluster validation (the bigger, the better)
-    
     .. math:: D = \\min_{i = 1 \\ldots n_c; j = i + 1\ldots n_c} \\left\\lbrace \\frac{d \\left( c_i,c_j \\right)}{\\max_{k = 1 \\ldots n_c} \\left(diam \\left(c_k \\right) \\right)} \\right\\rbrace
-    
     Args:
         labels: a list containing cluster labels for each of the n elements
         distances: an n x n numpy.array containing the pairwise distances between elements
-    
     Returns:
         The computed Dunn Index for the given data
     """
@@ -316,17 +291,15 @@ def dunn(labels, distances):
 
     if np.size(unique_cluster_distances) > 1:
         return unique_cluster_distances[1] / max_diameter
-    else:
-        return unique_cluster_distances[0] / max_diameter
+        
+    return unique_cluster_distances[0] / max_diameter
 
 
 def min_cluster_distances(labels, distances):
     """Calculates the distances between the two nearest points of each cluster.
-
     Args:
         labels: a list containing cluster labels for each of the n elements
         distances: an n x n numpy.array containing the pairwise distances between elements
-
     Returns:
         List containing distances between the two nearest points of each cluster
     """
@@ -343,11 +316,9 @@ def min_cluster_distances(labels, distances):
     
 def diameter(labels, distances):
     """Calculates cluster diameters (the distance between the two farthest data points in a cluster)
-    
     Args:
         labels: a list containing cluster labels for each of the n elements
         distances: an n x n numpy.array containing the pairwise distances between elements
-    
     Returns:
         List containing diameters of each cluster
     """
@@ -363,9 +334,7 @@ def diameter(labels, distances):
         
 
 def cluster_evaluation(X,labels,distances,max_number_of_clusters = None,step = 1,fig_size = None,cluster = None,y=None):
-
     """Evaluates the clustering trough Silhouette and Elbow plots and Dunn Index.
-
     Args:
         X : array [n_samples_a, n_samples_a] if metric == "precomputed", or, \
                  [n_samples_a, n_features] otherwise
@@ -386,15 +355,12 @@ def cluster_evaluation(X,labels,distances,max_number_of_clusters = None,step = 1
             if cluster == None will then generate a plot of the mean silhouettes of all clusters.
         y : Smple ID
             ID of the samples, used to label the bars on the y-axis
-
         **kwds : optional keyword parameters
             Any further parameters are passed directly to the distance function.
             If using a scipy.spatial.distance metric, the parameters are still
             metric dependent. See the scipy docs for usage examples.
-
     Returns:
         Void
-
     """
     print("Result of silhouette: "+ str(silhouette_score(distances,labels, metric= 'precomputed')))
     print("Result of dunn index: " + str(dunn(labels,distances)),"\n")
@@ -460,4 +426,46 @@ def c_index(data, labels):
     s_min = np.sum(sorted_distances[:f_w])
     s_max = np.sum(d_sorted_distances[:f_w])
     return (s_w - s_min)/(s_max - s_min)
-    
+
+def compute_s(clusters, i):
+    '''Computes de root mean square deviation of a cluster
+    Args:
+        clusters: clusters: a list of lists,
+        in which every list contains the elements of each cluster
+        i: index of the cluster
+    Returns:
+        The dispersion of the cluster
+    '''
+    return np.std(clusters[i])
+
+def compute_d(i, j, centers):
+    '''Computes the euclidean distance between two given centroids
+    Args:
+        i, j: indexes of the two clusters
+        centers: a list containing the cluster centroids
+    Returns:
+        distance between clusters i and j
+    '''
+    return euclidean(centers[i], centers[j])
+
+def davies_bouldin(clusters, centers):
+    '''Computes the Davies-Bouldin index for clustering evaluation
+    Args:
+        clusters: a list of lists,
+        in which every list contains the elements of each cluster
+        centers: a list of the centers of each cluster
+    Returns:
+        A value corresponding to the Davies-Bouldin index computed for the clusters
+    '''
+    dispersions_array = np.array([])
+    max_dispersions_array = np.array([])
+    for i in range(len(clusters)):
+        for j in range(len(clusters)):
+            if j == i:
+                continue
+            else:
+                dispersions_array = np.append(dispersions_array,
+                                              (compute_s(clusters, i) +
+                                            compute_s(clusters, j))/compute_d(i, j, centers))
+        max_dispersions_array = np.append(max_dispersions_array, max(dispersions_array))
+    return sum(max_dispersions_array)/len(clusters)
